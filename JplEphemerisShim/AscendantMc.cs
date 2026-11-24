@@ -90,8 +90,10 @@ public static class AscendantMc
             (asc, mc) = ComputeTropical(jdUt, latDeg, lonDeg);
         }
 
-        double c1 = (houseSystem == 'V' || houseSystem == 'v') ? ((asc - 15.0 + 360.0) % 360.0) : asc;
-        double c10 = (houseSystem == 'V' || houseSystem == 'v') ? ((asc + 255.0) % 360.0) : mc;
+        // VedAstro adds 15 degrees to each Vehlow anchor before Sripati trisection.
+        bool vehlow = houseSystem is 'V' or 'v';
+        double c1 = vehlow ? (asc + 345.0) % 360.0 : asc;
+        double c10 = vehlow ? (mc + 345.0) % 360.0 : mc;
 
         if (cusps != null && cusps.Length >= 13)
         {

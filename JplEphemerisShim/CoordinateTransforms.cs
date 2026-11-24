@@ -245,6 +245,90 @@ public static class CoordinateTransforms
     }
 
     /// <summary>
+    /// Compute True Lunar Node (Spashta Rahu) longitude.
+    /// If SpkReader is available, computes the instantaneous osculating node vector
+    /// from Moon's state vector (h = r x v, n = k x h).
+    /// Otherwise uses the 16-term Meeus / ELP-2000 periodic perturbation formula.
+    /// </summary>
+    public static double TrueLunarNodeLongitude(SpkReader? spk, double jdTdb)
+    {
+        if (spk != null)
+        {
+            try
+            {
+                // Finite difference to obtain Moon's velocity vector relative to Earth (NAIF 301 from 399)
+                double dt = 10.0 / 86400.0; // 10 seconds in days
+                var r1 = spk.GetPosition(SpkReader.MOON, SpkReader.EARTH, jdTdb - dt);
+                var r2 = spk.GetPosition(SpkReader.MOON, SpkReader.EARTH, jdTdb + dt);
+                var r = spk.GetPosition(SpkReader.MOON, SpkReader.EARTH, jdTdb);
+
+                double vx = (r2.X - r1.X) / (2.0 * 10.0);
+                double vy = (r2.Y - r1.Y) / (2.0 * 10.0);
+                double vz = (r2.Z - r1.Z) / (2.0 * 10.0);
+
+                // Angular momentum vector h = r x v in ICRF
+                double hx = r.Y * vz - r.Z * vy;
+                double hy = r.Z * vx - r.X * vz;
+                double hz = r.X * vy - r.Y * vx;
+
+                // Obliquity of ecliptic J2000
+                double T = (jdTdb - 2451545.0) / 36525.0;
+                double eps = (23.43929111 - 0.013004167 * T) * Math.PI / 180.0;
+                double cosEps = Math.Cos(eps);
+                double sinEps = Math.Sin(eps);
+
+                // Rotate h from ICRF (equatorial) to ecliptic coordinates:
+                double hxEcl = hx;
+                double hyEcl = hy * cosEps + hz * sinEps;
+                double hzEcl = -hy * sinEps + hz * cosEps;
+
+                // Ascending node vector n = k x h_ecl = (-hyEcl, hxEcl, 0)
+                double nodeLon = Math.Atan2(hxEcl, -hyEcl) * 180.0 / Math.PI;
+                return NormalizeDeg(nodeLon);
+            }
+            catch
+            {
+                // Fallback to Meeus analytical series
+            }
+        }
+
+        return AnalyticalTrueLunarNodeLongitude(jdTdb);
+    }
+
+    /// <summary>
+    /// Analytical True Lunar Node (Meeus Ch. 47 / ELP-2000 periodic perturbation terms).
+    /// </summary>
+    public static double AnalyticalTrueLunarNodeLongitude(double jdTdb)
+    {
+        double T = (jdTdb - 2451545.0) / 36525.0;
+        double omegaMean = 125.0445479 - 1934.1362891 * T + 0.0020754 * T * T + T * T * T / 467441.0 - T * T * T * T / 60616000.0;
+
+        double d = NormalizeDeg(297.8501921 + 445267.1114034 * T - 0.0018819 * T * T) * Math.PI / 180.0;
+        double m = NormalizeDeg(357.5291092 + 35999.0502909 * T - 0.0001536 * T * T) * Math.PI / 180.0;
+        double mPrime = NormalizeDeg(134.9633964 + 477198.8675055 * T + 0.0087414 * T * T) * Math.PI / 180.0;
+        double f = NormalizeDeg(93.2720950 + 483202.0175233 * T - 0.0036539 * T * T) * Math.PI / 180.0;
+
+        double deltaOmega = -1.4979 * Math.Sin(2.0 * (d - f))
+                           - 0.1500 * Math.Sin(m)
+                           - 0.1226 * Math.Sin(2.0 * d)
+                           + 0.1176 * Math.Sin(2.0 * f)
+                           - 0.0801 * Math.Sin(2.0 * (mPrime - f))
+                           - 0.0528 * Math.Sin(2.0 * (d - m))
+                           - 0.0385 * Math.Sin(2.0 * (d + f))
+                           - 0.0326 * Math.Sin(2.0 * (d - mPrime - f))
+                           + 0.0242 * Math.Sin(2.0 * (mPrime + f))
+                           - 0.0195 * Math.Sin(2.0 * (d - mPrime + f))
+                           + 0.0178 * Math.Sin(2.0 * (m - f))
+                           + 0.0154 * Math.Sin(mPrime - 2.0 * f)
+                           - 0.0142 * Math.Sin(m + 2.0 * (d - f))
+                           + 0.0134 * Math.Sin(mPrime + 2.0 * (d - f))
+                           - 0.0131 * Math.Sin(m - 2.0 * (d - f))
+                           - 0.0125 * Math.Sin(2.0 * (d - f) - mPrime);
+
+        return NormalizeDeg(omegaMean + deltaOmega);
+    }
+
+    /// <summary>
     /// Analytical Keplerian fallback for dates outside DE440s ephemeris span (e.g. historical charts before 1849).
     /// Uses Standish (1992) JPL elements and Meeus Ch. 47 for the Moon.
     /// </summary>

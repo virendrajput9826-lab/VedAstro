@@ -638,7 +638,7 @@ public class Calculate
 
 	public static ZodiacSign PlanetZodiacSign(PlanetName planetName, Time time)
 	{
-		return CacheManager.GetCache(new CacheKey("PlanetZodiacSign", planetName, time, Ayanamsa), _planetZodiacSign);
+		return CacheManager.GetCache(new CacheKey("PlanetZodiacSign", planetName, time, Ayanamsa, UseMeanRahuKetu), _planetZodiacSign);
 		ZodiacSign _planetZodiacSign()
 		{
 			return ZodiacSignAtLongitude(PlanetNirayanaLongitude(planetName, time));
@@ -5479,7 +5479,7 @@ public class Calculate
 
 	public static Angle PlanetNirayanaLongitude(PlanetName planetName, Time time)
 	{
-		return CacheManager.GetCache(new CacheKey("PlanetNirayanaLongitude", time, planetName, Ayanamsa), _getPlanetNirayanaLongitude);
+		return CacheManager.GetCache(new CacheKey("PlanetNirayanaLongitude", time, planetName, Ayanamsa, UseMeanRahuKetu), _getPlanetNirayanaLongitude);
 		Angle _getPlanetNirayanaLongitude()
 		{
 			if (IsUpagraha(planetName))

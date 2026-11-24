@@ -154,9 +154,16 @@ public class SwissEphShim : ISwissEphShim
 
             double longitude, latitude, distance;
 
-            if (swissPlanet == SE_MEAN_NODE || swissPlanet == SE_TRUE_NODE)
+            if (swissPlanet == SE_MEAN_NODE)
             {
                 longitude = CoordinateTransforms.MeanLunarNodeLongitude(jdTdb);
+                latitude = 0.0;
+                distance = 0.0;
+            }
+            else if (swissPlanet == SE_TRUE_NODE)
+            {
+                EnsureSpkLoaded();
+                longitude = CoordinateTransforms.TrueLunarNodeLongitude(_spk, jdTdb);
                 latitude = 0.0;
                 distance = 0.0;
             }
@@ -391,12 +398,12 @@ public class SwissEphShim : ISwissEphShim
 
     public int swe_lun_eclipse_when(double tjd_start, int ifl, int ifltype, double[] tret, bool backward, ref string errMsg)
     {
-        throw new NotImplementedException("swe_lun_eclipse_when is out of scope.");
+        return EclipseCalculator.FindLunarEclipse(this, tjd_start, ifltype, tret, backward, ref errMsg);
     }
 
     public int swe_sol_eclipse_when_glob(double tjd_start, int ifl, int ifltype, double[] tret, bool backward, ref string errMsg)
     {
-        throw new NotImplementedException("swe_sol_eclipse_when_glob is out of scope.");
+        return EclipseCalculator.FindSolarEclipse(this, tjd_start, ifltype, tret, backward, ref errMsg);
     }
 
     public void swe_set_ephe_path(string path)
