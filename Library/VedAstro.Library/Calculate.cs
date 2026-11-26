@@ -6837,11 +6837,12 @@ public class Calculate
 
 	public static bool IsGocharaObstructed(PlanetName planet, int gocharaHouse, Time birthTime, Time currentTime)
 	{
-		if (Vedhanka(planet, gocharaHouse) == 0)
+		int obstructionHouse = Vedhanka(planet, gocharaHouse);
+		if (obstructionHouse == 0)
 		{
 			return false;
 		}
-		List<PlanetName> list = PlanetsInGocharaHouse(birthTime, currentTime, gocharaHouse);
+		List<PlanetName> list = PlanetsInGocharaHouse(birthTime, currentTime, obstructionHouse);
 		if (planet == PlanetName.Sun || planet == PlanetName.Saturn)
 		{
 			list.Remove(PlanetName.Sun);

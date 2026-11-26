@@ -6,6 +6,37 @@ namespace VedAstro.Library.Tests
     [TestClass()]
     public class CalculateTests
     {
+        [TestMethod]
+        public void VenusNinthTransitChecksEleventhForObstruction()
+        {
+            var location = new GeoLocation("Delhi", 77.21, 28.61);
+            var birth = new Time("08:00 01/01/1990 +05:30", location);
+            var previousAyanamsa = Calculate.Ayanamsa;
+            var previousVedhanka = Calculate.UseVedhankaInGochara;
+            try
+            {
+                Calculate.Ayanamsa = (int)Ayanamsa.LAHIRI;
+                Calculate.UseVedhankaInGochara = true;
+                foreach (var (date, venusInNinth, blockers, expected) in new[]
+                {
+                    ("01/01/2026", false, 4, false),
+                    ("03/09/2026", true, 0, true),
+                    ("19/09/2026", true, 1, false)
+                })
+                {
+                    var instant = new Time($"12:00 {date} +05:30", location);
+                    Assert.AreEqual(venusInNinth, Calculate.GocharaZodiacSignCountFromMoon(birth, instant, PlanetName.Venus) == 9);
+                    Assert.AreEqual(blockers, Calculate.PlanetsInGocharaHouse(birth, instant, 11).Count);
+                    Assert.AreEqual(expected, Calculate.IsGocharaOccurring(birth, instant, PlanetName.Venus, 9));
+                }
+            }
+            finally
+            {
+                Calculate.Ayanamsa = previousAyanamsa;
+                Calculate.UseVedhankaInGochara = previousVedhanka;
+            }
+        }
+
         /// <summary>
         /// In order
         /// to.illustrate the various principles described in
