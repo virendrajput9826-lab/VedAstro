@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 namespace VedAstro.Library;
 
 public partial class CalculateHoroscope
@@ -70,6 +71,32 @@ public partial class CalculateHoroscope
 			var thirdLord = Calculate.LordOfHouse(HouseName.House3, time);
 			return Calculate.IsFixedSign(lagna) && Calculate.IsCommonSign(Sign(thirdLord)) && Points(thirdLord) == 5;
 		}
+		public bool MarsAshtakavargaYoga4()
+		{
+			return Points(mars) == 8;
+		}
+
+		public bool MarsAshtakavargaYoga9()
+		{
+			if (Points(mars) >= 4 || (House(mars) != 1 && FromMoon(mars) is not (1 or 9 or 10))) return false;
+			if (Calculate.LordOfHouse(HouseName.House1, time) != mars && Calculate.LordOfHouse(HouseName.House8, time) != mars) return false;
+			return Calculate.IsPlanetConjunctWithEnemyPlanets(mars, time) ||
+				Calculate.PlanetsInConjuction(mars, time).Any(p => Calculate.IsPlanetDebilitated(p, time));
+		}
+
+		public bool MarsAshtakavargaYoga17()
+		{
+			int points = Points(mars);
+			bool joinsSeventhLord = Calculate.IsPlanetConjunctWithPlanet(mars, Calculate.LordOfHouse(HouseName.House7, time), time);
+			if (points == 0 && joinsSeventhLord && (Calculate.IsPlanetDebilitated(mars, time) ||
+				Calculate.DistanceBetweenPlanets(mars, PlanetName.Sun, time).TotalDegrees < 17 ||
+				Calculate.IsPlanetConjunctWithMaleficPlanets(mars, time))) return true;
+			if (points is < 1 or > 3) return false;
+			if (House(mars) == 1 && House(saturn) == 1) return true;
+			return Calculate.SignDistanceFromPlanetToPlanet(saturn, mars, time) == 8 ||
+				Calculate.SignDistanceFromPlanetToPlanet(mars, saturn, time) == 8;
+		}
+
 	}
 
 	[HoroscopeCalculator(HoroscopeName.MarsAshtakavargaYoga7)]
@@ -107,4 +134,16 @@ public partial class CalculateHoroscope
 	[HoroscopeCalculator(HoroscopeName.MarsAshtakavargaYoga15)]
 	public static CalculatorResult MarsAshtakavargaYoga15(Time time) =>
 		CalculatorResult.New(new MarsBinduChart(time).MarsAshtakavargaYoga15(), new[] { PlanetName.Mars }, time);
+
+	[HoroscopeCalculator(HoroscopeName.MarsAshtakavargaYoga4)]
+	public static CalculatorResult MarsAshtakavargaYoga4(Time time) =>
+		CalculatorResult.New(new MarsBinduChart(time).MarsAshtakavargaYoga4(), new[] { PlanetName.Mars }, time);
+
+	[HoroscopeCalculator(HoroscopeName.MarsAshtakavargaYoga9)]
+	public static CalculatorResult MarsAshtakavargaYoga9(Time time) =>
+		CalculatorResult.New(new MarsBinduChart(time).MarsAshtakavargaYoga9(), new[] { PlanetName.Mars }, time);
+
+	[HoroscopeCalculator(HoroscopeName.MarsAshtakavargaYoga17)]
+	public static CalculatorResult MarsAshtakavargaYoga17(Time time) =>
+		CalculatorResult.New(new MarsBinduChart(time).MarsAshtakavargaYoga17(), new[] { PlanetName.Mars }, time);
 }

@@ -488,5 +488,12 @@ public enum HoroscopeName
 	MarsAshtakavargaYoga13A,
 	MarsAshtakavargaYoga13B,
 	MarsAshtakavargaYoga14,
-	MarsAshtakavargaYoga15
+	MarsAshtakavargaYoga15,
+	MarsAshtakavargaYoga4,
+	MarsAshtakavargaYoga9,
+	MarsAshtakavargaYoga17,
+	SunAshtakavargaYoga3,
+	MoonAshtakavargaYoga7,
+	MoonAshtakavargaYoga10,
+	MercuryAshtakavargaYoga12A
 }

@@ -5,6 +5,50 @@ namespace VedAstro.Library;
 
 public partial class CalculateHoroscope
 {
+	[HoroscopeCalculator(HoroscopeName.SunAshtakavargaYoga3)]
+	public static CalculatorResult SunAshtakavargaYoga3(Time time)
+	{
+		var planet = PlanetName.Sun;
+		var occupant = planet;
+		var sign = Calculate.PlanetZodiacSign(occupant, time).GetSignName();
+		int points = Calculate.PlanetAshtakvargaBindu(planet, sign, time);
+		bool occurs = Calculate.LordOfHouse(HouseName.House1, time) == planet && points >= 5;
+		return CalculatorResult.New(occurs, new[] { planet }, time);
+	}
+
+	[HoroscopeCalculator(HoroscopeName.MoonAshtakavargaYoga7)]
+	public static CalculatorResult MoonAshtakavargaYoga7(Time time)
+	{
+		var planet = PlanetName.Moon;
+		var occupant = PlanetName.Mars;
+		var sign = Calculate.PlanetZodiacSign(occupant, time).GetSignName();
+		int points = Calculate.PlanetAshtakvargaBindu(planet, sign, time);
+		bool occurs = points < 4 && Calculate.SignDistanceFromPlanetToPlanet(planet, PlanetName.Mars, time) is 4 or 8;
+		return CalculatorResult.New(occurs, new[] { planet }, time);
+	}
+
+	[HoroscopeCalculator(HoroscopeName.MoonAshtakavargaYoga10)]
+	public static CalculatorResult MoonAshtakavargaYoga10(Time time)
+	{
+		var planet = PlanetName.Moon;
+		var occupant = planet;
+		var sign = Calculate.PlanetZodiacSign(occupant, time).GetSignName();
+		int points = Calculate.PlanetAshtakvargaBindu(planet, sign, time);
+		bool occurs = points < 4 && Calculate.HousePlanetOccupies(planet, time) == HouseName.House1 && Calculate.IsMaleficPlanetInHouse(HouseName.House4, time);
+		return CalculatorResult.New(occurs, new[] { planet }, time);
+	}
+
+	[HoroscopeCalculator(HoroscopeName.MercuryAshtakavargaYoga12A)]
+	public static CalculatorResult MercuryAshtakavargaYoga12A(Time time)
+	{
+		var planet = PlanetName.Mercury;
+		var occupant = Calculate.LordOfZodiacSign(Calculate.PlanetZodiacSign(planet, time).GetSignName());
+		var sign = Calculate.PlanetZodiacSign(occupant, time).GetSignName();
+		int points = Calculate.PlanetAshtakvargaBindu(planet, sign, time);
+		bool occurs = points > 4 && (Calculate.IsPlanetInKendra(occupant, time) || Calculate.IsPlanetInTrikona(occupant, time));
+		return CalculatorResult.New(occurs, new[] { planet }, time);
+	}
+
 	[HoroscopeCalculator(HoroscopeName.SunAshtakavargaYoga2)]
 	public static CalculatorResult SunAshtakavargaYoga2(Time time)
 	{
