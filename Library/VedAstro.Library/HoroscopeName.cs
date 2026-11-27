@@ -444,5 +444,13 @@ public enum HoroscopeName
 	SaturnInSagittarius,
 	SaturnInCapricorn,
 	SaturnInAquarius,
-	SaturnInPisces
+	SaturnInPisces,
+	MoonAshtakavargaYoga1A,
+	MoonAshtakavargaYoga2B,
+	MoonAshtakavargaYoga4,
+	MarsAshtakavargaYoga19,
+	MarsAshtakavargaYoga5,
+	MarsAshtakavargaYoga11,
+	SunAshtakavargaYoga5,
+	SunAshtakavargaYoga11
 }

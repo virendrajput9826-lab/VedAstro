@@ -5,6 +5,82 @@ namespace VedAstro.Library;
 
 public class CalculateHoroscope
 {
+	[HoroscopeCalculator(HoroscopeName.MoonAshtakavargaYoga1A)]
+	public static CalculatorResult MoonAshtakavargaYoga1A(Time time)
+	{
+		var planet = PlanetName.Moon;
+		var sign = Calculate.PlanetZodiacSign(planet, time).GetSignName();
+		var points = Calculate.PlanetAshtakvargaBindu(planet, sign, time);
+		return CalculatorResult.New(points is >= 1 and <= 3, new[] { planet }, time);
+	}
+
+	[HoroscopeCalculator(HoroscopeName.MoonAshtakavargaYoga2B)]
+	public static CalculatorResult MoonAshtakavargaYoga2B(Time time)
+	{
+		var planet = PlanetName.Moon;
+		var sign = Calculate.PlanetZodiacSign(planet, time).GetSignName();
+		var points = Calculate.PlanetAshtakvargaBindu(planet, sign, time);
+		var house = Calculate.HousePlanetOccupies(planet, time);
+		return CalculatorResult.New(points > 6 && house is HouseName.House6 or HouseName.House11, new[] { planet }, time);
+	}
+
+	[HoroscopeCalculator(HoroscopeName.MoonAshtakavargaYoga4)]
+	public static CalculatorResult MoonAshtakavargaYoga4(Time time)
+	{
+		var planet = PlanetName.Moon;
+		var sign = Calculate.PlanetZodiacSign(planet, time).GetSignName();
+		var points = Calculate.PlanetAshtakvargaBindu(planet, sign, time);
+		return CalculatorResult.New(points is 7 or 8 && Calculate.IsPlanetInKendra(planet, time), new[] { planet }, time);
+	}
+
+	[HoroscopeCalculator(HoroscopeName.MarsAshtakavargaYoga19)]
+	public static CalculatorResult MarsAshtakavargaYoga19(Time time)
+	{
+		var planet = PlanetName.Mars;
+		var sign = Calculate.PlanetZodiacSign(planet, time).GetSignName();
+		var points = Calculate.PlanetAshtakvargaBindu(planet, sign, time);
+		var house = Calculate.HousePlanetOccupies(planet, time);
+		return CalculatorResult.New(points == 3 && house == HouseName.House3, new[] { planet }, time);
+	}
+
+	[HoroscopeCalculator(HoroscopeName.MarsAshtakavargaYoga5)]
+	public static CalculatorResult MarsAshtakavargaYoga5(Time time)
+	{
+		var planet = PlanetName.Mars;
+		var sign = Calculate.PlanetZodiacSign(planet, time).GetSignName();
+		var points = Calculate.PlanetAshtakvargaBindu(planet, sign, time);
+		var house = Calculate.HousePlanetOccupies(planet, time);
+		return CalculatorResult.New(points == 8 && house is HouseName.House1 or HouseName.House2 or HouseName.House10, new[] { planet }, time);
+	}
+
+	[HoroscopeCalculator(HoroscopeName.MarsAshtakavargaYoga11)]
+	public static CalculatorResult MarsAshtakavargaYoga11(Time time)
+	{
+		var planet = PlanetName.Mars;
+		var sign = Calculate.PlanetZodiacSign(planet, time).GetSignName();
+		var points = Calculate.PlanetAshtakvargaBindu(planet, sign, time);
+		var house = Calculate.HousePlanetOccupies(planet, time);
+		return CalculatorResult.New(points == 4 && (house == HouseName.House5 || Calculate.IsPlanetInKendra(planet, time)), new[] { planet }, time);
+	}
+
+	[HoroscopeCalculator(HoroscopeName.SunAshtakavargaYoga5)]
+	public static CalculatorResult SunAshtakavargaYoga5(Time time)
+	{
+		var planet = PlanetName.Sun;
+		var sign = Calculate.PlanetZodiacSign(planet, time).GetSignName();
+		var points = Calculate.PlanetAshtakvargaBindu(planet, sign, time);
+		return CalculatorResult.New(points > 5 && (Calculate.IsPlanetInKendra(planet, time) || Calculate.IsPlanetInTrikona(planet, time)), new[] { planet }, time);
+	}
+
+	[HoroscopeCalculator(HoroscopeName.SunAshtakavargaYoga11)]
+	public static CalculatorResult SunAshtakavargaYoga11(Time time)
+	{
+		var planet = PlanetName.Sun;
+		var sign = Calculate.PlanetZodiacSign(planet, time).GetSignName();
+		var points = Calculate.PlanetAshtakvargaBindu(planet, sign, time);
+		return CalculatorResult.New(points >= 5 && (Calculate.IsPlanetInKendra(planet, time) || Calculate.IsPlanetInTrikona(planet, time)), new[] { planet }, time);
+	}
+
 	[HoroscopeCalculator(HoroscopeName.MoonAshtakavargaYoga)]
 	public static CalculatorResult MoonAshtakavargaYoga(Time birthTime)
 	{
