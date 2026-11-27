@@ -1434,24 +1434,26 @@ public class Calculate
 		return result;
 	}
 
-	public static Time NextNewMoon(Time inputTime)
-	{
-		Time time = inputTime;
-		while (!(SunMoonConjunctionAngle(time).TotalDegrees < 1.0))
-		{
-			time = time.AddHours(0.5);
-		}
-		return time;
-	}
+	public static Time NextNewMoon(Time inputTime) => FindNewMoon(inputTime, 1);
 
-	public static Time PreviousNewMoon(Time inputTime)
+	public static Time PreviousNewMoon(Time inputTime) => FindNewMoon(inputTime, -1);
+
+	private static Time FindNewMoon(Time inputTime, int direction)
 	{
-		Time time = inputTime;
-		while (!(SunMoonConjunctionAngle(time).TotalDegrees < 1.0))
+		// Retain the original half-hour grid and its exact acceptance condition.
+		// A 12-hour step is safe beyond 12 degrees of circular separation:
+		// Moon-Sun relative motion remains below 18 degrees per day.
+		for (int halfHours = 0; halfHours <= 48 * 65;)
 		{
-			time = time.SubtractHours(0.5);
+			Time instant = inputTime.AddHours(direction * halfHours * 0.5);
+			double separation = SunMoonConjunctionAngle(instant).TotalDegrees;
+			if (!double.IsFinite(separation))
+				throw new InvalidOperationException("Non-finite Sun-Moon separation.");
+			if (separation < 1.0) return instant;
+			double circular = Math.Min(separation, 360.0 - separation);
+			halfHours += circular > 12.0 ? 24 : 1;
 		}
-		return time;
+		throw new InvalidOperationException("No new moon found in the supported search interval.");
 	}
 
 	public static Angle SunMoonConjunctionAngle(Time ccc)
