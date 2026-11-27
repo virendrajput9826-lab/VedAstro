@@ -3,8 +3,312 @@ using System.Linq;
 
 namespace VedAstro.Library;
 
-public class CalculateHoroscope
+public partial class CalculateHoroscope
 {
+	[HoroscopeCalculator(HoroscopeName.SunAshtakavargaYoga2)]
+	public static CalculatorResult SunAshtakavargaYoga2(Time time)
+	{
+		var planet = PlanetName.Sun;
+		var sign = Calculate.PlanetZodiacSign(planet, time).GetSignName();
+		var points = Calculate.PlanetAshtakvargaBindu(planet, sign, time);
+		bool occurs = points is 3 or 4 && sign != Calculate.PlanetExaltationPoint(planet).GetSignName() && Calculate.LordOfZodiacSign(sign) != planet;
+		return CalculatorResult.New(occurs, new[] { planet }, time);
+	}
+
+	[HoroscopeCalculator(HoroscopeName.SunAshtakavargaYoga6)]
+	public static CalculatorResult SunAshtakavargaYoga6(Time time)
+	{
+		var planet = PlanetName.Sun;
+		var sign = Calculate.PlanetZodiacSign(planet, time).GetSignName();
+		var points = Calculate.PlanetAshtakvargaBindu(planet, sign, time);
+		bool angleOrTrine = Calculate.IsPlanetInKendra(planet, time) || Calculate.IsPlanetInTrikona(planet, time);
+		bool occurs = points is >= 3 and <= 5 && angleOrTrine && Calculate.IsPlanetInFriendHouse(planet, time);
+		return CalculatorResult.New(occurs, new[] { planet }, time);
+	}
+
+	[HoroscopeCalculator(HoroscopeName.SunAshtakavargaYoga7)]
+	public static CalculatorResult SunAshtakavargaYoga7(Time time)
+	{
+		var planet = PlanetName.Sun;
+		var sign = Calculate.PlanetZodiacSign(planet, time).GetSignName();
+		var points = Calculate.PlanetAshtakvargaBindu(planet, sign, time);
+		var house = (int)Calculate.HousePlanetOccupies(planet, time);
+		bool occurs = points == 3 && house == 9 && Calculate.HousePlanetOccupies(PlanetName.Rahu, time) == HouseName.House9;
+		return CalculatorResult.New(occurs, new[] { planet }, time);
+	}
+
+	[HoroscopeCalculator(HoroscopeName.SunAshtakavargaYoga8)]
+	public static CalculatorResult SunAshtakavargaYoga8(Time time)
+	{
+		var planet = PlanetName.Sun;
+		var sign = Calculate.PlanetZodiacSign(planet, time).GetSignName();
+		var points = Calculate.PlanetAshtakvargaBindu(planet, sign, time);
+		var house = (int)Calculate.HousePlanetOccupies(planet, time);
+		bool Joined(PlanetName other) => Calculate.IsPlanetConjunctWithPlanet(planet, other, time);
+		bool occurs = points == 3 && house == 5 && Joined(PlanetName.Moon) && Joined(PlanetName.Mars) && Joined(PlanetName.Saturn);
+		return CalculatorResult.New(occurs, new[] { planet }, time);
+	}
+
+	[HoroscopeCalculator(HoroscopeName.SunAshtakavargaYoga9)]
+	public static CalculatorResult SunAshtakavargaYoga9(Time time)
+	{
+		var planet = PlanetName.Sun;
+		var sign = Calculate.PlanetZodiacSign(planet, time).GetSignName();
+		var points = Calculate.PlanetAshtakvargaBindu(planet, sign, time);
+		var house = (int)Calculate.HousePlanetOccupies(planet, time);
+		bool AspectedBy(PlanetName other) => Calculate.IsPlanetAspectedByPlanet(planet, other, time);
+		bool occurs = points is 3 or 4 && house == 3 && Calculate.MaleficPlanetList(time).Any(p => Calculate.HousePlanetOccupies(p, time) == HouseName.House9 && AspectedBy(p));
+		return CalculatorResult.New(occurs, new[] { planet }, time);
+	}
+
+	[HoroscopeCalculator(HoroscopeName.SunAshtakavargaYoga10)]
+	public static CalculatorResult SunAshtakavargaYoga10(Time time)
+	{
+		var planet = PlanetName.Sun;
+		var sign = Calculate.PlanetZodiacSign(planet, time).GetSignName();
+		var points = Calculate.PlanetAshtakvargaBindu(planet, sign, time);
+		var house = (int)Calculate.HousePlanetOccupies(planet, time);
+		bool AspectedBy(PlanetName other) => Calculate.IsPlanetAspectedByPlanet(planet, other, time);
+		bool occurs = points == 4 && house == 6 && AspectedBy(PlanetName.Jupiter);
+		return CalculatorResult.New(occurs, new[] { planet }, time);
+	}
+
+	[HoroscopeCalculator(HoroscopeName.MoonAshtakavargaYoga1B)]
+	public static CalculatorResult MoonAshtakavargaYoga1B(Time time)
+	{
+		var planet = PlanetName.Moon;
+		var sign = Calculate.PlanetZodiacSign(planet, time).GetSignName();
+		var points = Calculate.PlanetAshtakvargaBindu(planet, sign, time);
+		bool Joined(PlanetName other) => Calculate.IsPlanetConjunctWithPlanet(planet, other, time);
+		bool occurs = points is >= 1 and <= 3 && PlanetName.All9Planets.Count(p => p != planet && Joined(p)) is 2 or 3;
+		return CalculatorResult.New(occurs, new[] { planet }, time);
+	}
+
+	[HoroscopeCalculator(HoroscopeName.MoonAshtakavargaYoga6)]
+	public static CalculatorResult MoonAshtakavargaYoga6(Time time)
+	{
+		var planet = PlanetName.Moon;
+		var sign = Calculate.PlanetZodiacSign(planet, time).GetSignName();
+		var points = Calculate.PlanetAshtakvargaBindu(planet, sign, time);
+		var house = (int)Calculate.HousePlanetOccupies(planet, time);
+		bool occurs = points is >= 1 and <= 3 && house is 7 or 8 && Calculate.HousePlanetOccupies(PlanetName.Rahu, time) == HouseName.House2;
+		return CalculatorResult.New(occurs, new[] { planet }, time);
+	}
+
+	[HoroscopeCalculator(HoroscopeName.MoonAshtakavargaYoga8)]
+	public static CalculatorResult MoonAshtakavargaYoga8(Time time)
+	{
+		var planet = PlanetName.Moon;
+		var sign = Calculate.PlanetZodiacSign(planet, time).GetSignName();
+		var points = Calculate.PlanetAshtakvargaBindu(planet, sign, time);
+		var house = (int)Calculate.HousePlanetOccupies(planet, time);
+		bool occurs = points is >= 1 and <= 3 && (house == 12 || Calculate.IsPlanetInKendra(planet, time)) && Calculate.IsMaleficPlanetInHouse(HouseName.House4, time);
+		return CalculatorResult.New(occurs, new[] { planet }, time);
+	}
+
+	[HoroscopeCalculator(HoroscopeName.MoonAshtakavargaYoga9)]
+	public static CalculatorResult MoonAshtakavargaYoga9(Time time)
+	{
+		var planet = PlanetName.Moon;
+		var sign = Calculate.PlanetZodiacSign(planet, time).GetSignName();
+		var points = Calculate.PlanetAshtakvargaBindu(planet, sign, time);
+		var house = (int)Calculate.HousePlanetOccupies(planet, time);
+		bool occurs = points <= 3 && house == 1 && Calculate.IsWaningMoon(time);
+		return CalculatorResult.New(occurs, new[] { planet }, time);
+	}
+
+	[HoroscopeCalculator(HoroscopeName.MarsAshtakavargaYoga2)]
+	public static CalculatorResult MarsAshtakavargaYoga2(Time time)
+	{
+		var planet = PlanetName.Mars;
+		var sign = Calculate.PlanetZodiacSign(planet, time).GetSignName();
+		var points = Calculate.PlanetAshtakvargaBindu(planet, sign, time);
+		var house = (int)Calculate.HousePlanetOccupies(planet, time);
+		bool ownOrExalted = Calculate.IsPlanetInOwnHouse(planet, time) || Calculate.IsPlanetExalted(planet, time);
+		bool occurs = points == 8 && house is 1 or 4 or 9 or 10 && ownOrExalted;
+		return CalculatorResult.New(occurs, new[] { planet }, time);
+	}
+
+	[HoroscopeCalculator(HoroscopeName.MarsAshtakavargaYoga3)]
+	public static CalculatorResult MarsAshtakavargaYoga3(Time time)
+	{
+		var planet = PlanetName.Mars;
+		var sign = Calculate.PlanetZodiacSign(planet, time).GetSignName();
+		var points = Calculate.PlanetAshtakvargaBindu(planet, sign, time);
+		var house = (int)Calculate.HousePlanetOccupies(planet, time);
+		bool occurs = points == 4 && house == 1 && Calculate.LagnaSignName(time) is ZodiacName.Sagittarius or ZodiacName.Leo or ZodiacName.Aries or ZodiacName.Cancer or ZodiacName.Capricorn;
+		return CalculatorResult.New(occurs, new[] { planet }, time);
+	}
+
+	[HoroscopeCalculator(HoroscopeName.MarsAshtakavargaYoga6)]
+	public static CalculatorResult MarsAshtakavargaYoga6(Time time)
+	{
+		var planet = PlanetName.Mars;
+		var sign = Calculate.PlanetZodiacSign(planet, time).GetSignName();
+		var points = Calculate.PlanetAshtakvargaBindu(planet, sign, time);
+		var house = (int)Calculate.HousePlanetOccupies(planet, time);
+		bool ownOrExalted = Calculate.IsPlanetInOwnHouse(planet, time) || Calculate.IsPlanetExalted(planet, time);
+		bool occurs = points == 8 && house is 1 or 2 or 10 && ownOrExalted;
+		return CalculatorResult.New(occurs, new[] { planet }, time);
+	}
+
+	[HoroscopeCalculator(HoroscopeName.MarsAshtakavargaYoga8)]
+	public static CalculatorResult MarsAshtakavargaYoga8(Time time)
+	{
+		var planet = PlanetName.Mars;
+		var sign = Calculate.PlanetZodiacSign(planet, time).GetSignName();
+		var points = Calculate.PlanetAshtakvargaBindu(planet, sign, time);
+		var house = (int)Calculate.HousePlanetOccupies(planet, time);
+		bool occurs = points == 6 && house == 6 && Calculate.LordOfHouse(HouseName.House2, time) == planet;
+		return CalculatorResult.New(occurs, new[] { planet }, time);
+	}
+
+	[HoroscopeCalculator(HoroscopeName.MarsAshtakavargaYoga16)]
+	public static CalculatorResult MarsAshtakavargaYoga16(Time time)
+	{
+		var planet = PlanetName.Mars;
+		var sign = Calculate.PlanetZodiacSign(planet, time).GetSignName();
+		var points = Calculate.PlanetAshtakvargaBindu(planet, sign, time);
+		var house = (int)Calculate.HousePlanetOccupies(planet, time);
+		bool Joined(PlanetName other) => Calculate.IsPlanetConjunctWithPlanet(planet, other, time);
+		bool AspectedBy(PlanetName other) => Calculate.IsPlanetAspectedByPlanet(planet, other, time);
+		bool occurs = points >= 5 && house == 3 && Calculate.BeneficPlanetList(time).Any(p => Joined(p) || AspectedBy(p));
+		return CalculatorResult.New(occurs, new[] { planet }, time);
+	}
+
+	[HoroscopeCalculator(HoroscopeName.MarsAshtakavargaYoga22)]
+	public static CalculatorResult MarsAshtakavargaYoga22(Time time)
+	{
+		var planet = PlanetName.Mars;
+		var sign = Calculate.PlanetZodiacSign(planet, time).GetSignName();
+		var points = Calculate.PlanetAshtakvargaBindu(planet, sign, time);
+		bool angleOrTrine = Calculate.IsPlanetInKendra(planet, time) || Calculate.IsPlanetInTrikona(planet, time);
+		bool occurs = points == 4 && angleOrTrine && sign is ZodiacName.Sagittarius or ZodiacName.Aries or ZodiacName.Capricorn;
+		return CalculatorResult.New(occurs, new[] { planet }, time);
+	}
+
+	[HoroscopeCalculator(HoroscopeName.MarsAshtakavargaYoga23)]
+	public static CalculatorResult MarsAshtakavargaYoga23(Time time)
+	{
+		var planet = PlanetName.Mars;
+		var sign = Calculate.PlanetZodiacSign(planet, time).GetSignName();
+		var points = Calculate.PlanetAshtakvargaBindu(planet, sign, time);
+		bool Joined(PlanetName other) => Calculate.IsPlanetConjunctWithPlanet(planet, other, time);
+		bool AspectedBy(PlanetName other) => Calculate.IsPlanetAspectedByPlanet(planet, other, time);
+		bool occurs = points >= 5 && (Joined(PlanetName.Saturn) || (AspectedBy(PlanetName.Saturn) && Calculate.IsPlanetAspectedByPlanet(PlanetName.Saturn, planet, time)));
+		return CalculatorResult.New(occurs, new[] { planet }, time);
+	}
+
+	[HoroscopeCalculator(HoroscopeName.MarsAshtakavargaYoga24)]
+	public static CalculatorResult MarsAshtakavargaYoga24(Time time)
+	{
+		var planet = PlanetName.Mars;
+		var sign = Calculate.PlanetZodiacSign(planet, time).GetSignName();
+		var points = Calculate.PlanetAshtakvargaBindu(planet, sign, time);
+		bool Joined(PlanetName other) => Calculate.IsPlanetConjunctWithPlanet(planet, other, time);
+		bool AspectedBy(PlanetName other) => Calculate.IsPlanetAspectedByPlanet(planet, other, time);
+		bool occurs = points is >= 1 and <= 3 && (Joined(PlanetName.Mercury) || AspectedBy(PlanetName.Mercury));
+		return CalculatorResult.New(occurs, new[] { planet }, time);
+	}
+
+	[HoroscopeCalculator(HoroscopeName.MarsAshtakavargaYoga25)]
+	public static CalculatorResult MarsAshtakavargaYoga25(Time time)
+	{
+		var planet = PlanetName.Mars;
+		var sign = Calculate.PlanetZodiacSign(planet, time).GetSignName();
+		var points = Calculate.PlanetAshtakvargaBindu(planet, sign, time);
+		bool Joined(PlanetName other) => Calculate.IsPlanetConjunctWithPlanet(planet, other, time);
+		bool AspectedBy(PlanetName other) => Calculate.IsPlanetAspectedByPlanet(planet, other, time);
+		bool occurs = points >= 5 && (Joined(PlanetName.Moon) || AspectedBy(PlanetName.Moon));
+		return CalculatorResult.New(occurs, new[] { planet }, time);
+	}
+
+	[HoroscopeCalculator(HoroscopeName.MercuryAshtakavargaYoga3)]
+	public static CalculatorResult MercuryAshtakavargaYoga3(Time time)
+	{
+		var planet = PlanetName.Mercury;
+		var sign = Calculate.PlanetZodiacSign(planet, time).GetSignName();
+		var points = Calculate.PlanetAshtakvargaBindu(planet, sign, time);
+		var house = (int)Calculate.HousePlanetOccupies(planet, time);
+		bool occurs = points is >= 1 and <= 3 && house is 6 or 8 && !Calculate.IsPlanetAspectedByBeneficPlanets(planet, time);
+		return CalculatorResult.New(occurs, new[] { planet }, time);
+	}
+
+	[HoroscopeCalculator(HoroscopeName.MercuryAshtakavargaYoga4)]
+	public static CalculatorResult MercuryAshtakavargaYoga4(Time time)
+	{
+		var planet = PlanetName.Mercury;
+		var sign = Calculate.PlanetZodiacSign(planet, time).GetSignName();
+		var points = Calculate.PlanetAshtakvargaBindu(planet, sign, time);
+		var house = (int)Calculate.HousePlanetOccupies(planet, time);
+		bool Joined(PlanetName other) => Calculate.IsPlanetConjunctWithPlanet(planet, other, time);
+		bool occurs = points is >= 1 and <= 3 && house is 6 or 8 or 12 && Joined(PlanetName.Venus);
+		return CalculatorResult.New(occurs, new[] { planet }, time);
+	}
+
+	[HoroscopeCalculator(HoroscopeName.MercuryAshtakavargaYoga5)]
+	public static CalculatorResult MercuryAshtakavargaYoga5(Time time)
+	{
+		var planet = PlanetName.Mercury;
+		var sign = Calculate.PlanetZodiacSign(planet, time).GetSignName();
+		var points = Calculate.PlanetAshtakvargaBindu(planet, sign, time);
+		bool angleOrTrine = Calculate.IsPlanetInKendra(planet, time) || Calculate.IsPlanetInTrikona(planet, time);
+		bool Joined(PlanetName other) => Calculate.IsPlanetConjunctWithPlanet(planet, other, time);
+		bool AspectedBy(PlanetName other) => Calculate.IsPlanetAspectedByPlanet(planet, other, time);
+		bool occurs = points == 5 && angleOrTrine && (Joined(PlanetName.Jupiter) || Joined(PlanetName.Saturn) || AspectedBy(PlanetName.Jupiter) || AspectedBy(PlanetName.Saturn));
+		return CalculatorResult.New(occurs, new[] { planet }, time);
+	}
+
+	[HoroscopeCalculator(HoroscopeName.MercuryAshtakavargaYoga6)]
+	public static CalculatorResult MercuryAshtakavargaYoga6(Time time)
+	{
+		var planet = PlanetName.Mercury;
+		var sign = Calculate.PlanetZodiacSign(planet, time).GetSignName();
+		var points = Calculate.PlanetAshtakvargaBindu(planet, sign, time);
+		bool occurs = points == 5 && Calculate.SignDistanceFromPlanetToPlanet(PlanetName.Saturn, planet, time) is 4 or 6 && (Calculate.HousePlanetOccupies(PlanetName.Jupiter, time) == HouseName.House2 || Calculate.IsHouseAspectedByPlanet(HouseName.House2, PlanetName.Jupiter, time));
+		return CalculatorResult.New(occurs, new[] { planet }, time);
+	}
+
+	[HoroscopeCalculator(HoroscopeName.MercuryAshtakavargaYoga7)]
+	public static CalculatorResult MercuryAshtakavargaYoga7(Time time)
+	{
+		var planet = PlanetName.Mercury;
+		var sign = Calculate.PlanetZodiacSign(planet, time).GetSignName();
+		var points = Calculate.PlanetAshtakvargaBindu(planet, sign, time);
+		bool Joined(PlanetName other) => Calculate.IsPlanetConjunctWithPlanet(planet, other, time);
+		bool AspectedBy(PlanetName other) => Calculate.IsPlanetAspectedByPlanet(planet, other, time);
+		bool occurs = points == 5 && (Joined(PlanetName.Jupiter) || Joined(PlanetName.Mars) || AspectedBy(PlanetName.Mars));
+		return CalculatorResult.New(occurs, new[] { planet }, time);
+	}
+
+	[HoroscopeCalculator(HoroscopeName.MercuryAshtakavargaYoga8)]
+	public static CalculatorResult MercuryAshtakavargaYoga8(Time time)
+	{
+		var planet = PlanetName.Mercury;
+		bool occurs = Calculate.PlanetAshtakvargaBindu(planet, Calculate.PlanetZodiacSign(PlanetName.Ketu, time).GetSignName(), time) == 3 && (Calculate.HousePlanetOccupies(PlanetName.Ketu, time) == HouseName.House5 || Calculate.IsPlanetConjunctWithPlanet(PlanetName.Ketu, Calculate.LordOfHouse(HouseName.House5, time), time));
+		return CalculatorResult.New(occurs, new[] { planet }, time);
+	}
+
+	[HoroscopeCalculator(HoroscopeName.MercuryAshtakavargaYoga9)]
+	public static CalculatorResult MercuryAshtakavargaYoga9(Time time)
+	{
+		var planet = PlanetName.Mercury;
+		var sign = Calculate.PlanetZodiacSign(planet, time).GetSignName();
+		var points = Calculate.PlanetAshtakvargaBindu(planet, sign, time);
+		bool AspectedBy(PlanetName other) => Calculate.IsPlanetAspectedByPlanet(planet, other, time);
+		bool occurs = points == 4 && Calculate.LordOfZodiacSign(sign) == PlanetName.Mars && Calculate.LordOfZodiacSign(Calculate.PlanetNavamsaSign(planet, time)) == PlanetName.Venus && AspectedBy(PlanetName.Jupiter);
+		return CalculatorResult.New(occurs, new[] { planet }, time);
+	}
+
+	[HoroscopeCalculator(HoroscopeName.MercuryAshtakavargaYoga12B)]
+	public static CalculatorResult MercuryAshtakavargaYoga12B(Time time)
+	{
+		var planet = PlanetName.Mercury;
+		var sign = Calculate.PlanetZodiacSign(planet, time).GetSignName();
+		bool occurs = (int)Calculate.HousePlanetOccupies(Calculate.LordOfZodiacSign(sign), time) is 6 or 8 or 12;
+		return CalculatorResult.New(occurs, new[] { planet }, time);
+	}
+
 	[HoroscopeCalculator(HoroscopeName.MoonAshtakavargaYoga1A)]
 	public static CalculatorResult MoonAshtakavargaYoga1A(Time time)
 	{
@@ -218,7 +522,16 @@ public class CalculateHoroscope
 	[HoroscopeCalculator(HoroscopeName.VanchanaChoraBheethiYoga)]
 	public static CalculatorResult VanchanaChoraBheethiYoga(Time birthTime)
 	{
-		return CalculatorResult.NotOccuring();
+		var firstLord = Calculate.LordOfHouse(HouseName.House1, time);
+		bool joinsFirstLord = new[] { PlanetName.Rahu, PlanetName.Saturn, PlanetName.Ketu }
+			.Any(p => p != firstLord && Calculate.IsPlanetConjunctWithPlanet(firstLord, p, time));
+		var gulika = Calculate.GulikaLongitude(time);
+		int[] trines = { 1, 5, 9 };
+		bool trinalGulika = trines.Any(h => Calculate.HouseLongitude((HouseName)h, time).IsLongitudeInHouseRange(gulika));
+		bool joinsHouseLord = new[] { 1, 4, 5, 7, 9, 10 }
+			.Select(h => Calculate.LordOfHouse((HouseName)h, time)).Distinct()
+			.Any(p => Calculate.DistanceBetweenPlanets(gulika, Calculate.PlanetNirayanaLongitude(p, time)).TotalDegrees <= 8);
+		return CalculatorResult.New(joinsFirstLord || joinsHouseLord || (trinalGulika && Calculate.IsMaleficPlanetInHouse(HouseName.House1, time)), new[] { firstLord }, time);
 	}
 
 	[HoroscopeCalculator(HoroscopeName.SakataYoga)]
