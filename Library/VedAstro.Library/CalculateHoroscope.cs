@@ -520,7 +520,7 @@ public partial class CalculateHoroscope
 	}
 
 	[HoroscopeCalculator(HoroscopeName.VanchanaChoraBheethiYoga)]
-	public static CalculatorResult VanchanaChoraBheethiYoga(Time birthTime)
+	public static CalculatorResult VanchanaChoraBheethiYoga(Time time)
 	{
 		var firstLord = Calculate.LordOfHouse(HouseName.House1, time);
 		bool joinsFirstLord = new[] { PlanetName.Rahu, PlanetName.Saturn, PlanetName.Ketu }
